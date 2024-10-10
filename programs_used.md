@@ -5,30 +5,25 @@
 * **gcc**
 
 ```bash
-apt install gcc -y            # Скачивание
-apt remove --purge gcc -y     # Удаление
+apt install gcc -y
 ```
 
 * **CMake**
 
 ```bash
-apt install cmake -y          # Скачивание
-apt remove --purge cmake -y   # Удаление
+apt install cmake -y
 ```
-
 
 * **Vim**
 
 ```bash
-apt install vim -y            # Скачивание
-apt remove --purge vim -y     # Удаление
+apt install vim -y
 ```
 
 * **Git**
 
 ```bash
-apt install git -y            # Скачивание
-apt remove --purge git -y     # Удаление
+apt install git -y
 
 #----------------------------- НАСТРОЙКА ----------------------------------#
 
@@ -52,46 +47,51 @@ cat ~/.ssh/id_ed25519.pub
 
 ```
 
-* Qt, Qt Assistant, Qt Creator
+* **Qt, Qt Assistant, Qt Creator**
 
 ```bash
-apt install build-essential qt6-base-dev qtcreator -y
+apt install build-essential qt6-base-dev qtcreator qml6-module-* qt6-*-dev -y
 ```
 
-* SQLite, SQLite Manager
-
+* **SQLite, SQLite Manager**
 
 ```bash
-
+apt install sqlite3 sqlitebrowser -y
 ```
 
-
-* GhostWriter
-
-
+* **GhostWriter**
 
 ```bash
-
+apt install ghostwriter -y
 ```
 
-* Konsole
-
-
+* **Konsole**
 
 ```bash
-
+apt install konsole -y
 ```
 
-
+* **Pluma**
 
 ```bash
-su -
-
-apt install gcc cmake vim git konsole ghostwriter -y
-
-
-
-
-
-
+apt install pluma -y
 ```
+
+
+
+---
+
+### 2) Графика, видео, аудио
+
+
+---
+
+
+### 3) Комплект офисных программ
+
+
+---
+
+
+### 4) Браузер
+
