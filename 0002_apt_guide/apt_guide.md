@@ -59,3 +59,26 @@ apt update
 ```sh
 apt autoremove -y
 ```
+
+<br>  
+<br>  
+
+---
+Кроме apt часто используется утилита apt-file, позволяющая определить, к какому пакету относится искомый файл и наоборот - из каких файлов состоит пакет:
+```sh
+sudo apt-file update
+apt-file search /bin/chmod
+apt-file show coreutils
+```
+
+<br>  
+<br>  
+
+---
+Список репозиториев, доступных для скачивания ПО, находится по адресу:
+```sh
+/etc/apt/sources.list
+```
+
+<br>  
+<br>  
