@@ -5,7 +5,7 @@
 
 * **Браузер: Mozilla Firefox**
 
-```sh
+```console
 apt install firefox-esr/stable-security firefox-esr-l10n-ru/stable-security -y
 ```
 
@@ -16,7 +16,7 @@ apt install firefox-esr/stable-security firefox-esr-l10n-ru/stable-security -y
 	- GUI-программа для работы с архивами: __Engrampa__
 	- Терминал: __MATE Terminal__
 
-```sh
+```console
 apt install mate-desktop-environment -y
 ```
 
@@ -26,7 +26,7 @@ apt install mate-desktop-environment -y
 
 * **Менеджер пакетов: Snap**
 
-```sh
+```console
 apt install snap -y
 snap install snapd -y
 ```
@@ -37,25 +37,25 @@ snap install snapd -y
 
 * **Компилятор для C++: gcc**
 
-```sh
+```console
 apt install gcc -y
 ```
 
 * **Система сборки проектов: CMake**
 
-```sh
+```console
 apt install cmake -y
 ```
 
 * **Консольный текстовый редактор: Vim**
 
-```sh
+```console
 apt install vim -y
 ```
 
 * **Система контроля версий: Git**
 
-```sh
+```console
 apt install git -y
 
 #----------------------------- НАСТРОЙКА ----------------------------------#
@@ -82,7 +82,7 @@ cat ~/.ssh/id_ed25519.pub
 
 * **IDE: Qt, Qt Creator, Qt Assistant**
 
-```sh
+```console
 apt install build-essential qt6-base-dev qtcreator qml6-module-* qt6-*-dev -y
 
 #----------------------------- НАСТРОЙКА -------------------------------------#
@@ -200,25 +200,25 @@ VisualStudioDark.xml
 
 * **СУБД: SQLite, SQLite Manager**
 
-```sh
+```console
 apt install sqlite3 sqlitebrowser -y
 ```
 
 * **Редактор md-файлов: GhostWriter**
 
-```sh
+```console
 apt install ghostwriter -y
 ```
 
 * **Терминал: Konsole**
 
-```sh
+```console
 apt install konsole -y
 ```
 
 * **GUI-текстовый редактор: Pluma**
 
-```sh
+```console
 apt install pluma -y
 ```
 
@@ -228,31 +228,31 @@ apt install pluma -y
 
 * **Видеоплеер: GNOME Videos**
 
-```sh
+```console
 apt install totem -y
 ```
 
 * **Приложение для просмотра изображений: Eye of MATE**
 
-```sh
+```console
 apt install eom -y
 ```
 
 * **Аудиоплеер: Audacious**
 
-```sh
+```console
 apt install audacious -y
 ```
 
 * **Простой редактор растровых изображений: KolourPaint**
 
-```sh
+```console
 apt install kolourpaint -y
 ```
 
 * **Продвинутый редактор растровых изображений: Gimp**
 
-```sh
+```console
 apt install gimp -y
 ```
 
@@ -262,7 +262,7 @@ apt install gimp -y
 
 * **Комплект офисных программ: Libre Office**
 
-```sh
+```console
 apt install libreoffice -y
 ```
 

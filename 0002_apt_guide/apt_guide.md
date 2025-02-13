@@ -3,7 +3,7 @@
 
 * **Проверка доступности пакета для установки**
 
-```sh
+```console
 apt policy <package_name>
 
 # Пример
@@ -12,7 +12,7 @@ apt policy git
 
 * **Установка пакета**
 
-```sh
+```console
 apt install <package_name> -y
 
 # Пример
@@ -21,7 +21,7 @@ apt install git -y
 
 * **Удаление пакета**
 
-```sh
+```console
 apt remove <package_name>          # Удалить только программу
 apt remove --purge <package_name>  # Удалить и программу и её конфигурационные файлы
                                    # (кроме файлов конфигурации в домашнем каталоге)
@@ -32,31 +32,31 @@ apt remove --purge git
 
 * **Вывод списка установленных пакет**
 
-```sh
+```console
 apt list --installed
 ```
 
 * **Вывод списка пакетов, для которых доступны обновления**
 
-```sh
+```console
 apt list --upgradable
 ```
 
 * **Обновить список доступных пакетов**
 
-```sh
+```console
 apt upgrade
 ```
 
 * **Обновить систему, устанавливая/обновляя пакеты**
 
-```sh
+```console
 apt update
 ```
 
 * **Автоматическое удаление всех неиспользуемых пакетов**
 
-```sh
+```console
 apt autoremove -y
 ```
 
@@ -65,7 +65,7 @@ apt autoremove -y
 
 ---
 Кроме apt часто используется утилита apt-file, позволяющая определить, к какому пакету относится искомый файл и наоборот - из каких файлов состоит пакет:
-```sh
+```console
 sudo apt-file update
 apt-file search /bin/chmod
 apt-file show coreutils
@@ -76,7 +76,7 @@ apt-file show coreutils
 
 ---
 Список репозиториев, доступных для скачивания ПО, находится по адресу:
-```sh
+```console
 /etc/apt/sources.list
 ```
 

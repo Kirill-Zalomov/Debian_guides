@@ -5,13 +5,17 @@
 Аналогом программ **VirtualBox** и **VMware** в **apt** является **virt-manager**. Данная программа предоставляет графический интерфейс для управления виртуальными машинами, который схож с интерфейсом **VirtualBox** и **VMware**.
 <br>  
 
-### 1) Проверка доступности пакета virt-manager
+### 1) Проверка доступности пакета virt-manager в apt  
+
 Для проверки доступности пакета **virt-manager** в **apt** можно использовать команду:
 
-```sh
+```console
 apt policy virt-manager
+```
 
-#------------------------- Примерный вывод команды -----------------------#
+Примерный вывод команды, сигнализирующий о доступности пакета:
+
+```console
 kirillzalomov@debian:~$ apt policy virt-manager
 virt-manager:
   Установлен: (отсутствует)
@@ -25,7 +29,7 @@ virt-manager:
 
 Если пакет будет не доступен, то вывод команды будет примерно таким:
 
-```sh
+```console
 kirillzalomov@debian:~$ apt policy virtualbox
 virtualbox:
   Установлен: (отсутствует)
@@ -35,16 +39,16 @@ virtualbox:
 
 Или таким:
 
-```sh
+```console
 kirillzalomov@debian:~$ apt policy vmware
 N: Невозможно найти пакет vmware
 ```
 
-### 2) Установка virt-manager
+### 2) Установка пакета virt-manager через apt
 
 Для установки можно использовать команду:
 
-```sh
+```console
 sudo apt install virt-manager -y
 ```
 
