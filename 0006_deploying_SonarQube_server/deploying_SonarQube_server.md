@@ -14,7 +14,7 @@
   3.3. [Сборка программы Pixelitor](#сhapter_3.3)  
   3.3. [Запуск программы Pixelitor](#сhapter_3.4)  
 4. [Поиск официальных источников информации о SonarQube, документации и инструкции по развёртыванию](#сhapter_4)  
-5. [Изучение системных требований SonarQube](#сhapter_5)  
+5. [Изучение системных требований SonarQube Community Build](#сhapter_5)  
 
 
 <br>  
@@ -159,12 +159,16 @@ java -jar Pixelitor-4.3.1.jar
 <a name="сhapter_4"></a>
 ### 4) Поиск официальных источников информации о SonarQube, документации и инструкций по установке/настройке  
 
+Собранные источники приведены в таблице 1.  
+
+Таблица 1 --- Официальные источники информации по SonarQube  
+
 | Название источника | Ссылка |
 |---|---|
 | Официальный сайт SonarQube | [www.sonarsource.com](https://www.sonarsource.com/) |
 | Информация о различных версиях анализатора | [www.sonarsource.com](https://www.sonarsource.com/products/sonarqube/downloads/) |
 | Документация по SonarQube | [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/) |
-| Системные требования SonarQube | [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/installation-requirements/server-host/) |
+| Системные требования SonarQube SonarQube Community Build | [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/installation-requirements/server-host/), [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/installation-requirements/database-requirements/) |
 | Официальная инструкция по установке SonarQube Community Build | [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/try-out-sonarqube/) |
 | Официальная инструкция по постустановочной настройке SonarQube | [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/overview/) |
 
@@ -174,9 +178,44 @@ java -jar Pixelitor-4.3.1.jar
 ---  
 
 <a name="сhapter_5"></a>
-### 5) Изучение системных требований SonarQube
+### 5) Изучение системных требований SonarQube Community Build  
 
-Системные требования будут 
+Согласно информации с официального сайта (рисунок 7), SonarQube Community Build подходит для проектов с кодовой базой менее 1 млн. строк.  
+
+![Ограничение объёма кодовой базы для SonarQube Community Build](images/7.png)  
+Рисунок 7 --- Ограничение объёма кодовой базы для SonarQube Community Build  
+
+Убедимся, что проект Pixelitor подходит под данное требование, запустив в папке проекте следующую последовательность команд (рисунок 8):  
+
+```console
+find . -name "*.java" -type f | xargs wc -l | tail
+```
+
+![Количество строк кода в проекте Pixelitor без учёта библиотек](images/8.png)  
+Рисунок 8 --- Количество строк кода в проекте Pixelitor без учёта библиотек  
+
+Кодовая база Pixelitor составляет примерно 196 тыс. строк кода без учёта кода библиотек. Таким образом, проект Pixelitor по критерию объёма кодовой базы подходит для применения SonarQube Community Build.  
+
+Сгруппируем требования SonarQube Community Build в таблицу 2.
+
+Таблица 2 --- Системные требования, требования к ПО и аппаратному обеспечению, требования к кодовой базе проекта для установки SonarQube Community Build  
+
+| Компонент | Требование |
+|---|---|
+| **Объём кодовой базы проекта** | < 1 млн. строк |
+| **Операционная система** | Linux, Windows, macOS |
+| **Процессор** | 2+ ядра |
+| **Оперативная память**| 4+ ГБ |
+| **Жёсткий диск** | Примерно 30 ГБ свободного места (зависит от размера кодовой базы проекта) |
+| **Java** | JRE или OpenJDK (версий 17 или 21) |
+| **База данных** | PostgreSQL 13–17, Microsoft SQL Server 2016–2022, Oracle 19C 21C 23ai |
+| **Веб-сервер** | Не требуется (встроенный) |
+| **Сеть** | Минимум 1 Гбит/с |
+| **Дополнительно** | Открытые порты: 9000 (HTTP) и 9001 (для внутренней связи) |
+| **Браузер для доступа к веб-интерфейсу** | Microsoft Edge (latest version), Mozilla Firefox (latest version), Google Chrome (latest version), Safari (latest version) |
+
+
+
 
 
 
