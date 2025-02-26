@@ -256,7 +256,18 @@ sudo apt install -y virt-manager
 - Тип сетевого подключения: NAT Network
 - IPv4: 192.168.122.215/24
 
-Конфигурация БД должна соответствовать требованиям, приведённым на: [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/install-the-server/installing-the-database/).  
+Перед началом конфигурации необходимо сделать снимок системы сразу после установки для того, чтобы в случае критических ошибок можно было вернуться к чистой системе (рисунки 10-11).
+
+![Создание снимка в virt-manager](images/10.png)  
+Рисунок 10 --- Создание снимка в virt-manager  
+
+![Создание снимка в virt-manager](images/11.png)  
+Рисунок 11 --- Создание снимка в virt-manager  
+
+Конфигурация БД должна соответствовать требованиям, приведённым на странице: [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/install-the-server/installing-the-database/) (рисунок 12).  
+
+![Требования к конфигурации СУБД PostgreSQL для работы с SonarQube Community Build](images/12.png)  
+Рисунок 12 --- Требования к конфигурации СУБД PostgreSQL для работы с SonarQube Community Build  
 
 Приведённые ниже команды учитывают требования к конфигурации БД, предъявляемые на момент написания статьи (февраль 2025).  
 
@@ -354,6 +365,15 @@ sudo systemctl status postgresql
 
 <a name="сhapter_6.2"></a>
 #### 6.2) Настройка виртуальной машины для сервера SonarQube Community Build  
+
+Конфигурация виртуальной машины:  
+
+- Операционная система: Linux Debian 11 Bullseye
+- Ядра процессора: 4
+- Оперативная память: 4096 МБ (4 ГБ)
+- Объём внешнего накопителя: 20 ГБ
+- Тип сетевого подключения: NAT Network
+- IPv4: 192.168.122.67/24
 
 ```console
 sudo apt install -y tmux sudo wget apt-transport-https
