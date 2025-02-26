@@ -15,6 +15,9 @@
   3.3. [Запуск программы Pixelitor](#сhapter_3.4)  
 4. [Поиск официальных источников информации о SonarQube, документации и инструкции по развёртыванию](#сhapter_4)  
 5. [Изучение системных требований SonarQube Community Build](#сhapter_5)  
+6. [Подготовка виртуальных машин для установки SonarQube Community Build и дополнительных компонентов программной инфраструктуры](#сhapter_6)  
+  6.1. [Настройка виртуальной машины для СУБД PostreSQL](#сhapter_6.1)  
+  6.2. [Настройка виртуальной машины для сервера SonarQube Community Build](#сhapter_6.2)  
 
 
 <br>  
@@ -174,6 +177,7 @@ java -jar Pixelitor-4.3.1.jar
 
 <br>  
 <br>  
+<br>  
 
 ---  
 
@@ -185,7 +189,7 @@ java -jar Pixelitor-4.3.1.jar
 ![Ограничение объёма кодовой базы для SonarQube Community Build](images/7.png)  
 Рисунок 7 --- Ограничение объёма кодовой базы для SonarQube Community Build  
 
-Убедимся, что проект Pixelitor подходит под данное требование, запустив в папке проекте следующую последовательность команд (рисунок 8):  
+Убедимся, что проект Pixelitor подходит под данное требование, запустив в папке проекта следующую последовательность команд (рисунок 8):  
 
 ```console
 find . -name "*.java" -type f | xargs wc -l | tail
@@ -198,6 +202,7 @@ find . -name "*.java" -type f | xargs wc -l | tail
 
 Сгруппируем требования SonarQube Community Build в таблицу 2.
 
+<a name="сhapter_5_table_of_requirements"></a>
 Таблица 2 --- Системные требования, требования к ПО и аппаратному обеспечению, требования к кодовой базе проекта для установки SonarQube Community Build  
 
 | Компонент | Требование |
@@ -214,8 +219,156 @@ find . -name "*.java" -type f | xargs wc -l | tail
 | **Дополнительно** | Открытые порты: 9000 (HTTP) и 9001 (для внутренней связи) |
 | **Браузер для доступа к веб-интерфейсу** | Microsoft Edge (latest version), Mozilla Firefox (latest version), Google Chrome (latest version), Safari (latest version) |
 
+<br>  
+<br>  
+<br>  
+
+---  
+
+<a name="сhapter_6"></a>
+### 6) Подготовка виртуальных машин для установки SonarQube Community Build и дополнительных компонентов программной инфраструктуры  
+
+В качестве ПО для виртуализации будет использоваться пакет __virt-manager__ (рисунок 9). Данное ПО относится к стабильной ветке пакетов apt, поэтому доступно для скачивания через команду:  
+
+```console
+sudo apt install -y virt-manager
+```
+
+![Программа virt-manager](images/9.png)  
+Рисунок 9 --- Программа virt-manager  
+
+ПО SonarQube Community Build в процессе своей работы должно использовать базу данных. Сервер SonarQube имеет встроенную базу данных (см. [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/9.8/setup-and-upgrade/configure-and-operate-a-server/environment-variables/)), но её использование рекомендуется только в целях ознакомления с ПО SonarQube. В связи с эти встроенная БД не будет использоваться. Вместо неё будет установлена и сконфигурирована СУБД PostreSQL 15 (версия выбрана с учётом [системных требований SonarQube Community Build](#сhapter_5_table_of_requirements)).  
+
+Таким образом, необходимо настроить две виртуальные машины:  
+
+- Для СУБД PostgreSQL.  
+- Для сервера статического анализатора SonarQube Community Build.  
+
+<a name="сhapter_6.1"></a>
+#### 6.1) Настройка виртуальной машины для СУБД PostreSQL  
+
+Конфигурация виртуальной машины:  
+
+- Операционная система: Linux Debian 11 Bullseye
+- Ядра процессора: 1
+- Оперативная память: 512 МБ
+- Объём внешнего накопителя: 8 ГБ
+- Тип сетевого подключения: NAT Network
+- IPv4: 192.168.122.215/24
+
+Конфигурация БД должна соответствовать требованиям, приведённым на: [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/install-the-server/installing-the-database/).  
+
+Приведённые ниже команды учитывают требования к конфигурации БД, предъявляемые на момент написания статьи (февраль 2025).  
+
+```console
+# Предполагается, что в системе существует только root и другие
+# пользователи, созданные автоматически в процессе установки ОС.
+
+# Действия, выполняемые под пользователем root:
+apt update
+apt upgrade
+
+# Установка пакетов:
+# tmux -  пакет  для  удобства администрирования  (обеспечение
+# доступа к нескольким терминалам одновременно).
+# sudo - пакет для запуска программ с повышенными привилегиями
+# на основании принадлежности к группе.
+# postgresql - пакет СУБД PostgreSQL.
+apt install -y tmux sudo postresql
+
+# После  установки  PostgreSQL в системе будет  создан  новый 
+# пользователь: postres (администратор PostgreSQL).
+
+# Определение локалей, доступных на устройстве:
+locale -a
+
+# Если  в  списке  вывода  предыдущей  команды  НЕТ  локали
+# en_US.UTF-8, то её необходимо установить через нижеприве-
+# дённую  команду  (выбор локали  происходит  через клавишу
+# "Пробел"):
+sudo dpkg-reconfigure locales
+
+# Смена пароля для администратора PostgreSQL:
+sudo passwd postgres
+
+# Переключение с root на postgres и вход в PostgreSQL:
+su - postgres
+psql
+
+#--------------------------------------------------------------------#
+#           Следующий блок команд выполняется в PostgreSQL.          #
+#         После каждой команды необходимо ставить символ ';'.        #
+#--------------------------------------------------------------------#
+
+CREATE USER sonarqube WITH PASSWORD '<password>';
+
+CREATE DATABASE sonarqube
+WITH OWNER sonarqube
+ENCODING 'UTF8'
+TEMPLATE = template0;
+
+\c sonarqube
+
+CREATE SCHEMA sonarQubeSchema;
+
+GRANT ALL PRIVILEGES ON SCHEMA sonarQubeSchema TO sonarqube;
+
+ALTER USER sonarqube SET search_path TO sonarQubeSchema;
+
+REVOKE ALL ON DATABASE sonarqube FROM PUBLIC;
+
+GRANT CONNECT ON DATABASE sonarqube TO sonarqube;
+
+# Команды для проверки конфигурации БД:
+\du                  -- Проверка пользователя
+\l                   -- Проверка базы данных
+\dn                  -- Проверка схемы
+SHOW search_path;    -- Проверка search_path
+
+\q
+
+#--------------------------------------------------------------------#
+#                 Конец блока команд для PostgreSQL.                 #
+#--------------------------------------------------------------------#
 
 
+# Редактирование первого конфигурационного файла PostgreSQL:
+sudo nano /etc/postgresql/13/main/pg_hba.conf
+# Записать строку в категорию local connections:
+host    sonarqube    sonarqube    <IPv4_of_VM_with_sonarqube>    md5
+
+# Узнать IPv4 для текущей машины можно с помощью команды:
+ip a
+
+# Редактирование второго конфигурационного файла PostgreSQL:
+sudo nano /etc/postgresql/13/main/postgresql.conf
+# Цифра после "/etc/postgresql/" может быть другая.
+# Раскомментировать строку и исправить значение параметра:
+listen_addresses = '*'
+
+# Перезапуск службы postgresql
+sudo systemctl restart postgresql
+# Проверка статуса службы postgresql
+sudo systemctl status postgresql
+```
+
+<a name="сhapter_6.2"></a>
+#### 6.2) Настройка виртуальной машины для сервера SonarQube Community Build  
+
+```console
+sudo apt install -y tmux sudo wget apt-transport-https
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+sudo adduser sonarqube
+
+# Войти под пользователем sonarqube
+mkdir downloads
+cd downloads
+
+```
 
 
+<br>  
+<br>  
 
+---  
