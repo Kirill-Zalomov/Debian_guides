@@ -18,6 +18,8 @@
 6. [Подготовка виртуальных машин для установки SonarQube Community Build и дополнительных компонентов программной инфраструктуры](#сhapter_6)  
   6.1. [Настройка виртуальной машины для СУБД PostreSQL](#сhapter_6.1)  
   6.2. [Настройка виртуальной машины для сервера SonarQube Community Build](#сhapter_6.2)  
+    6.2.1. [Предварительная настройка системы перед установкой SonarQube Community Build](#сhapter_6.2.1)  
+    6.2.2. [Установка SonarQube Community Build](#сhapter_6.2.2)  
 
 
 <br>  
@@ -249,14 +251,15 @@ sudo apt install -y virt-manager
 
 Конфигурация виртуальной машины:  
 
-- Операционная система: Linux Debian 11 Bullseye
-- Ядра процессора: 1
-- Оперативная память: 512 МБ
-- Объём внешнего накопителя: 8 ГБ
-- Тип сетевого подключения: NAT Network
-- IPv4: 192.168.122.215/24
+- Операционная система: Linux Debian 11 Bullseye  
+- Ядра процессора: 1  
+- Оперативная память: 512 МБ  
+- Объём внешнего накопителя: 8 ГБ  
+- Тип сетевого подключения: NAT Network  
+- IPv4: 192.168.122.215/24  
 
-Перед началом конфигурации необходимо сделать снимок системы сразу после установки для того, чтобы в случае критических ошибок можно было вернуться к чистой системе (рисунки 10-11).
+<a name="snapshot"></a>
+Перед началом конфигурации необходимо сделать снимок системы сразу после установки для того, чтобы в случае критических ошибок можно было вернуться к чистой системе (рисунки 10-11).  
 
 ![Создание снимка в virt-manager](images/10.png)  
 Рисунок 10 --- Создание снимка в virt-manager  
@@ -286,6 +289,7 @@ apt upgrade
 # на основании принадлежности к группе.
 # postgresql - пакет СУБД PostgreSQL.
 apt install -y tmux sudo postresql
+tmux
 
 # После  установки  PostgreSQL в системе будет  создан  новый 
 # пользователь: postres (администратор PostgreSQL).
@@ -368,25 +372,230 @@ sudo systemctl status postgresql
 
 Конфигурация виртуальной машины:  
 
-- Операционная система: Linux Debian 11 Bullseye
-- Ядра процессора: 4
-- Оперативная память: 4096 МБ (4 ГБ)
-- Объём внешнего накопителя: 20 ГБ
-- Тип сетевого подключения: NAT Network
-- IPv4: 192.168.122.67/24
+- Операционная система: Linux Debian 11 Bullseye  
+- Ядра процессора: 4  
+- Оперативная память: 4096 МБ (4 ГБ)  
+- Объём внешнего накопителя: 20 ГБ  
+- Тип сетевого подключения: NAT Network  
+- IPv4: 192.168.122.67/24  
+
+После установки ОС на ВМ так же, как и на предыдущей машине необходимо сделать снимок системы (см. [рисунок 10 и 11](#snapshot)).  
+
+<br>  
+
+<a name="сhapter_6.2.1"></a>
+#### 6.2.1) Предварительная настройка системы перед установкой SonarQube Community Build  
+
+<a name="sonarqube_preinstallation_requirements"></a>
+Перед установкой SonarQube Community Build необходимо сконфигурировать систему, чтобы она удовлетворяла требованиям, приведённым по следующим сслыкам:  
+
+- Требования к установке OpenJDK: [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/install-the-server/installing-sonarqube-from-zip-file/).  
+- Шаги предварительной установки в системах Linux: [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/pre-installation/linux/).  
+  - Настройка хоста для корректной работы Elasticsearch: [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/pre-installation/linux/) и [www.elastic.co](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).  
+  - Требования к конфигурации дескрипторов файлов: [www.elastic.co](https://www.elastic.co/guide/en/elasticsearch/reference/current/file-descriptors.html).  
+- Включение SecComp в ядре ​​Linux: [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/pre-installation/linux/).  
+- Проверка установленности FontConfig (обычно устанавливается автоматически вместе с системой): [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/pre-installation/linux/).  
+
+Последовательно закроем каждое из данных требований:  
 
 ```console
-sudo apt install -y tmux sudo wget apt-transport-https
+#-------------------------------------------------------------------------#
+#                         1) Установка OpenJDK-21                         #
+#-------------------------------------------------------------------------#
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-sudo adduser sonarqube
+# Предполагается, что в системе существует только root и другие
+# пользователи, созданные автоматически в процессе установки ОС.
 
-# Войти под пользователем sonarqube
-mkdir downloads
-cd downloads
+# Действия, выполняемые под пользователем root:
 
+sudo apt update
+sudo apt upgrade
+
+# Установка через apt двух утилит:
+# wget                 — утилита командной строки для загрузки файлов из интернета по HTTP, HTTPS и FTP
+# apt-transport-https  — пакет, который позволяет apt работать с репозиториями, доступными по протоколу HTTPS
+sudo apt install -y wget apt-transport-https
+
+# Загрузка публичного GPG-ключа и его сохранение в системе для проверки подлинности пакетов из репозитория Adoptium
+wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo tee /etc/apt/trusted.gpg.d/adoptium.asc
+
+# Добавление репозитория Adoptium в список источников пакетов (sources.list)
+echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list
+
+# Обновление локальной базы данных пакетов, доступных в репозиториях
+sudo apt update
+
+# Установка пакета temurin-21-jdk (OpenJDK 21):
+sudo apt install temurin-21-jdk
+
+# Проверка корректности установки temurin-21-jdk:
+java --version
 ```
 
+Перед настройкой параметров для корректной работы Elasticsearch проверим их текущие значения и определим, какие из них нужно изменить. На рисунке 13 приведены необходимые значения параметров, на рисунке 14 - текущие.  
+
+![Требования для корректной работы Elasticsearch](images/13.png)  
+Рисунок 13 --- Требования для корректной работы Elasticsearch  
+
+Команды для получения текущих значений:  
+
+```console
+sysctl vm.max_map_count
+sysctl fs.file-max
+ulimit -n
+ulimit -u
+```
+
+![Текущие значения параметров, необходимых для корректной работы Elasticsearch](images/14.png)  
+Рисунок 14 --- Текущие значения параметров, необходимых для корректной работы Elasticsearch  
+
+Таким образом, необходимо исправить два параметра: vm.max_map_count и количество файловых дескрипторов, которые может открыть пользователь. Сделаем это с помощью команд:  
+
+```console
+#-------------------------------------------------------------------------#
+#         2) Настройка хоста для корректной работы Elasticsearch          #
+#-------------------------------------------------------------------------#
+
+# Редактирование значений первых двух параметров:
+sudo touch /etc/sysctl.conf.d/99-sonarqube.conf
+sudo echo "vm.max_map_count=524288" >> /etc/sysctl.conf.d/99-sonarqube.conf
+sudo echo "fs.file-max=131072" >> /etc/sysctl.conf.d/99-sonarqube.conf
+
+# Другой способ изменения параметров: от имени root прописывать при каждом
+# запуске ВМ следующее (не рекомендуется):
+#    sysctl -w vm.max_map_count=524288
+#    sysctl -w fs.file-max=131072
+
+# Редактирование значений вторых двух параметров:
+sudo touch /etc/security/limits.d/99-sonarqube.conf
+sudo echo "sonarqube - nofile 131072" >> /etc/security/limits.d/99-sonarqube.conf
+sudo echo "sonarqube - nproc 8192" >> /etc/security/limits.d/99-sonarqube.conf
+```
+
+Проверим включенность SecComp в ядре ​​Linux с помощью команд:
+
+```cosnsole
+#-------------------------------------------------------------------------#
+#              3) Проверка включенности SecComp в ядре ​​Linux              #
+#-------------------------------------------------------------------------#
+
+grep SECCOMP /boot/config-$(uname -r)
+```
+
+![Совпадающие ожидаемый и полученный выводы команды, показывающей включенность SecComp](images/15.png)  
+Рисунок 15 --- Совпадающие ожидаемый и полученный выводы команды, показывающей включенность SecComp  
+
+Исходя из полученного вывода команды (рисунок 16), следует, что SecComp включен.  
+
+Осталось проверить установленность в системе FontConfig:  
+
+```console
+#-------------------------------------------------------------------------#
+#                  4) Проверка установленности FontConfig                 #
+#-------------------------------------------------------------------------#
+
+dpkg -l fontconfig
+```
+
+В результате выполнения команды, получили вывод (рисунок 16), сигнализирующий об установленности FontConfig в системе, поскольку dpkg вывел информацию с префиксом "ii" (установлено).  
+
+![Сообщение, подтверждающее установленность FontConfig в системе](images/16.png)  
+Рисунок 16 --- Сообщение, подтверждающее установленность FontConfig в системе  
+
+Таким образом, все [предустановочные требования SonarQube](#sonarqube_preinstallation_requirements) выполнены. Теперь можно переходить к установке SonarQube Community Build.
+
+<br>  
+
+<a name="сhapter_6.2.2"></a>
+#### 6.2.2) Установка SonarQube Community Build  
+
+Базовая настройка SonarQube Community Build: [docs.sonarsource.com](https://docs.sonarsource.com/sonarqube-server/latest/setup-and-upgrade/install-the-server/installing-sonarqube-from-zip-file/).
+
+Команды для настройки SonarQube Community Build:  
+
+```console
+# Предполагается, что в системе существует только root и другие
+# пользователи, созданные автоматически в процессе установки ОС.
+
+# Действия, выполняемые под пользователем root:
+sudo apt update
+sudo apt upgrade
+sudo apt install -y tmux wget unzip
+
+# Скачивание архива с SonarQube с официального сайта
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-25.2.0.102705.zip
+
+# Распаковка архива в директорию /opt
+sudo unzip sonarqube-25.2.0.102705.zip -d /opt
+
+# Удаление скачанного архива для освобождения места
+sudo rm sonarqube-25.2.0.102705.zip
+
+# Переименование директории с SonarQube для удобства
+sudo mv /opt/sonarqube-25.2.0.102705 /opt/sonarqube
+
+# Создание пользователя sonarqube и назначение ему домашней директории /opt/sonarqube
+sudo useradd -d /opt/sonarqube -s /bin/bash sonarqube
+
+# Назначение прав пользователю sonarqube на директорию /opt/sonarqube
+sudo chown -R sonarqube:sonarqube /opt/sonarqube
+
+# Создание директорий для данных и временных файлов SonarQube
+sudo mkdir /var/sonarqube/
+sudo mkdir /var/sonarqube/data
+sudo mkdir /var/sonarqube/temp
+
+# Назначение прав пользователю sonarqube на созданные директории
+sudo chown -R sonarqube:sonarqube /var/sonarqube/
+
+# Редактирование конфигурационного файла sonar.properties
+sudo nano /opt/sonarqube/conf/sonar.properties
+# Раскомментировать следующие строки и присвоить параметрам значения:
+sonar.jdbc.url=jdbc:postgresql://192.168.122.215:5432/sonarqube?currentSchema=sonarQubeSchema
+sonar.jdbc.username=sonarqube
+sonar.jdbc.password=<password>
+sonar.path.data=/var/sonarqube/data
+sonar.path.temp=/var/sonarqube/temp
+
+sudo reboot
+```
+
+<a name="сhapter_6.2.3"></a>
+#### 6.2.3) Запуск SonarQube Community Build  
+
+__ВАЖНО:__ Перед запуском сервера SonarQube Community Build должено быть также запущено устройство (в моём случае - виртуальная машина) с PostgreSQL.  
+
+Для запуска SonarQube Community Build необходимо воспользоваться командами:  
+
+```console
+# Запуск SonarQube от имени пользователя sonarqube
+sudo -u sonarqube /opt/sonarqube/bin/linux-x86-64/sonar.sh start
+
+# Проверка статуса SonarQube
+sudo -u sonarqube /opt/sonarqube/bin/linux-x86-64/sonar.sh status
+```
+
+В случае удачного запуска будет после команды "status" будет выведено сообщение, которое показано на рисунке 17:  
+
+![Сообщение, подтверждающее работу сервера SonarQube Community Build](images/17.png)  
+Рисунок 17 --- Сообщение, подтверждающее работу сервера SonarQube Community Build  
+
+Если сервер SonarQube Community Build заработал можно попробовать подключиться к нему через браузер хостовой машины (рисунок 18):  
+
+![Успешное подключение к серверу SonarQube через браузер хостовой машины](images/18.png)  
+Рисунок 18 --- Успешное подключение к серверу SonarQube через браузер хостовой машины  
+
+При первом запуске сервера SonarQube необходимо воспользоваться следующим логином и паролем, чтобы войти:  
+
+```
+Логин:   admin  
+Пароль:  admin  
+```
+
+После первого запуска будет предложено изменить пароль "admin" на собственный пароль (рисунок 19).
+
+![Смена пароля при первом подключении администратора к серверу SonarQube](images/19.png)  
+Рисунок 19 --- Смена пароля при первом подключении администратора к серверу SonarQube  
 
 <br>  
 <br>  
