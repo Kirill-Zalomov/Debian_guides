@@ -20,6 +20,7 @@
   6.2. [Настройка виртуальной машины для сервера SonarQube Community Build](#сhapter_6.2)  
     6.2.1. [Предварительная настройка системы перед установкой SonarQube Community Build](#сhapter_6.2.1)  
     6.2.2. [Установка SonarQube Community Build](#сhapter_6.2.2)  
+    6.2.3. [Запуск SonarQube Community Build](#сhapter_6.2.3)  
 
 
 <br>  
