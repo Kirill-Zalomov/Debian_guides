@@ -64,10 +64,10 @@ sudo apt install -y wget fdisk e2fsprogs dosfstools
 В данном примере будет использован немного более сложный метод: использование утилиты __wget__. Для скачивания выбран образ: __debian-12.8.0-amd64-DVD-1.iso__ (iso-образ для offline-установки СО Debian 12.8.0).
 
 ```console
-# Перейдём в папке, куда нужно скачать iso-образ:
+# Перейдём в папку, куда нужно скачать iso-образ:
 cd ~/Документы/iso_debian/
 
-# Скачаем выбранный образ:
+# Скачаем выбранный iso-образ:
 wget https://cdimage.debian.org/images/archive/12.8.0/amd64/iso-dvd/debian-12.8.0-amd64-DVD-1.iso
 ```
 
